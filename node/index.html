@@ -6,10 +6,6 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script>
-        //vars
-        var api_status,  api_nameFirst, api_nameSecond, api_ipAddFirst, api_ipAddSecond,
-                api_statusFirst, api_statusSecond, api_created;
-
         function createCookie(name, value, days) {
             var expires;
 
@@ -39,47 +35,63 @@
         }
 
         function get_clientInfo(_client_info) {
-            if(_client_info != 'omg'){
+            if (_client_info != 'omg') {
                 console.log('baba', _client_info);
                 $('.settings').hide();
                 $('.erase_settings').show();
-                $('.api_show').append('<div class="error">'+ _client_info.client_api  +'</div>');
-                $('.id_show').append('<div class="error">'+ _client_info.client_id  +'</div>');
+                $('.api_show').append('<div class="error">' + _client_info.client_api + '</div>');
+                $('.id_show').append('<div class="error">' + _client_info.client_id + '</div>');
             }
-            else{
+            else {
                 $('.chart').append('<div class="error"> Api and id keys are empty </div>');
+                $('.api_show').append('');
+                $('.id_show').append('');
             }
         }
 
-        function get_droplets(_droplets_info){
-            if(_droplets_info != 'omg'){
+        function get_droplets(_droplets_info) {
+            if (_droplets_info != 'omg') {
 
-                var api_obj = JSON.parse(_droplets_info);
-                 var api_arr = api_obj.droplets;
-                console.log('govn', api_arr[0]['created_at']);
-                console.log('govn', api_arr.length);
-
-                $('.status').append('<h3>Status:  '+  api_obj.status  +'</h3>');
-                for (var i=0;i < api_arr.length;i++)
-                {
-                    $('.all_drops').append('<div class="droplet">');
-                    $('.droplet').append('<ul class="">');
-                    $('.droplet ul').append('<li class="">Name :' + api_arr[i]['name']+ '</li>');
-                    $('.droplet ul').append('<li class="">Ip address :' + api_arr[i]['ip_address']+ '</li>');
-                    $('.droplet ul').append('<li class="">Status :' + api_arr[i]['status']+ '</li>');
-                    $('.droplet ul').append('<li class="">Status :' + api_arr[i]['created_at']+ '</li>');
-                    $('.droplet').append('</ul>');
-                    $('.all_drops').append('</div>');
+                var api_obj = JSON.parse(_droplets_info),
+                        api_arr = api_obj.droplets;
+                $('.status').prepend('<h3>Status:  ' + api_obj.status + '</h3>');
+                for (var i = 0; i < api_arr.length; i++) {
+                    $('.all_drops').append('<div class="droplet droplet_' + i + '"><ul class="droplet_list droplet_list_' + i + '">');
+                    $('.droplet_list_' + i).append('<li class="">Name : <span class="drop_data"> ' + api_arr[i]['name'] + '</span></li>');
+                    $('.droplet_list_' + i).append('<li class="">Ip address : <span class="drop_data"> ' + api_arr[i]['ip_address'] + '</span></li>');
+                    $('.droplet_list_' + i).append('<li class="">Status : <span class="drop_data"> ' + api_arr[i]['status'] + '</span></li>');
+                    $('.droplet_list_' + i).append('<li class="">Crt. date : <span class="drop_data"> ' + api_arr[i]['created_at'] + '</span></li>');
+                    $('.all_drops').append('</ul></div>');
                 }
-
-
-                $('.chart').append('<div class="suck">Status:  '+  api_obj.status  +'</div>');
-
-
+                $('.chart').append('<div class="suck">Droplet status:  ' + api_obj.status + '</div>');
                 $('.chart').append('<div class="suck"> Droplets status data has been loaded</div>');
             }
-            else{
+            else {
+                $('.status').prepend('<h3>Droplet status:  Nothing to show</h3>');
+                $('.droplet').hide();
                 $('.chart').append('<div class="error"> Droplets status is empty</div>');
+
+            }
+        }
+
+        function get_sshkeys(_ssh_info) {
+            if (_ssh_info != 'omg') {
+
+                var api_obj = JSON.parse(_ssh_info),
+                        api_arr = api_obj.ssh_keys;
+                for (var i = 0; i < api_arr.length; i++) {
+                    $('.ssh').append('<div class="ssh_keys ssh_keys_' + i + '">');
+                    $('.ssh_keys_' + i).append('<div class="">Name : <span class="drop_data"> ' + api_arr[i]['name'] + '</span></div>');
+                    $('.ssh').append('</div>');
+                }
+                $('.chart').append('<div class="suck">Ssh keys status:  ' + api_obj.status + '</div>');
+                $('.chart').append('<div class="suck"> Ssh keys data has been loaded</div>');
+            }
+            else {
+                $('.ssh').append('<h3>Status:  Nothing to show</h3>');
+                $('.ssh_keys').hide();
+                $('.chart').append('<div class="error"> Ssh key is empty</div>');
+
             }
         }
 
@@ -96,6 +108,10 @@
                 get_droplets(_droplets_info);
             });
 
+            socket.emit('get_sshkeys', '', function (_ssh_info) {
+                get_sshkeys(_ssh_info);
+            });
+
         });
 
         // on load of page
@@ -103,7 +119,7 @@
 
             $('.settings_submit').on("click", function () {
                 var client_id = $('#cli_id').val(), client_api = $('#cli_api').val();
-                if((client_id == '') || (client_api == '')){
+                if ((client_id == '') || (client_api == '')) {
                     $('#cli_id, #cli_api').css('border', '1px solid red');
                     $('.chart').append('<div class="error">Insert some values</div>');
                     return;
@@ -116,6 +132,20 @@
                 socket.emit('get_droplets', '', function (_droplets_info) {
                     get_droplets(_droplets_info);
                 });
+            });
+
+            $('.erase_settings').on("click", function (){
+                socket.emit('remove_data');
+                socket.emit('get_clientinfo', '', function (_client_info) {
+                    get_clientInfo(_client_info);
+                });
+                socket.emit('get_droplets', '', function (_droplets_info) {
+                    get_droplets(_droplets_info);
+                });
+                socket.emit('get_sshkeys', '', function (_ssh_info) {
+                    get_sshkeys(_ssh_info);
+                });
+                $('.chart').append('<div class="suck">Client data removed</div>');
             });
 
         });
@@ -132,8 +162,8 @@
 
     <div class="pref">
         <div class="settings">
-            <input id="cli_id" type="text"/>
-            <input id="cli_api" type="text"/>
+            <input id="cli_id" type="text" placeholder="Id"/>
+            <input id="cli_api" type="text" placeholder="Api key"/>
             <input type="submit" class="settings_submit" value="Save">
         </div>
         <div class="settings_show">
@@ -160,8 +190,17 @@
 
 
 </section>
-<section class="chart">
+
+<section class="bottom">
+    <div class="ssh">
+        <h3>SSH keys</h3>
+
+
+    </div>
 
 </section>
+
+
+<section class="chart"></section>
 </body>
 </html>

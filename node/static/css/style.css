@@ -55,9 +55,10 @@ body{
 
 input{
     display: block;
-    width: 225px;
+    width: 215px;
     height: 34px;
     padding:0;
+    padding-left: 12px;
     margin-top: 2px;
     font-size: 14px;
     line-height: 1.428571429;
@@ -86,6 +87,7 @@ input:focus{
     background: green;
     color:#fff;
     cursor: pointer;
+    padding: 0;
 }
 
 .settings_submit:hover{
@@ -98,16 +100,22 @@ header{
     background: url('../img/header.png') 0px -3px;
 }
 
-.main{
+.main, .bottom{
     width: 960px;
     background: #fff;
     margin: 0 auto;
+}
+
+.bottom{
+    margin-top: 10px;
+    min-height: 200px;
 }
 
 .pref{
     width: 300px;
     padding: 15px;
     display: inline-block;
+    min-height: 200px;
 }
 
 
@@ -134,11 +142,12 @@ header{
 }
 
 .chart{
-    position: absolute;
-    bottom: 0px;
+    /*position: absolute;*/
+    /*bottom: 0px;*/
     height: 200px;
-    width: 970px;
-    margin-left: 21%;
+    width: 960px;
+    margin: 10px auto;
+    /*margin-left: 21%;*/
     background: #fff;
 }
 
@@ -176,6 +185,7 @@ display: inline-block;
     background: red;
     color:#fff;
     cursor: pointer;
+    padding: 0;
 }
 
 .erase_settings:hover{
@@ -185,7 +195,43 @@ display: inline-block;
 .status{
     display: inline-block;
     vertical-align: top;
-    width: 500px;
+    width: 623px;
     min-height: 200px;
-    border: 1px solid #398bce;
+    /*border: 1px solid #398bce;*/
+}
+
+.status h3{
+    color: green;
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
+}
+
+.droplet{
+    display: inline-block;
+    width: 270px;
+    padding: 20px;
+}
+
+.droplet_list li{
+
+}
+.drop_data{
+    color:#0066FF;
+    font-weight: bold;
+}
+
+.ssh{
+    width: 350px;
+    /*border: 1px solid red;*/
+    padding: 20px;
+}
+
+.ssh h3{
+    margin-left: 20px;
+    font-weight: bold;
+}
+
+.ssh_keys {
+    margin-top: 5px;
 }

@@ -17,8 +17,8 @@ app.configure(function () {
 });
 
 function isEmpty(obj) {
-    for(var key in obj) {
-        if(obj.hasOwnProperty(key))
+    for (var key in obj) {
+        if (obj.hasOwnProperty(key))
             return false;
     }
     return true;
@@ -26,11 +26,8 @@ function isEmpty(obj) {
 
 
 //saving settings
-var client_info = {}, api_url = 'https://api.digitalocean.com/droplets/?';
+var client_info = {}, api_url = 'https://api.digitalocean.com', api_key = '&api_key=', client_id = '&client_id=';
 console.log(client_info);
-
-
-
 
 io.sockets.on('connection', function (socket) {
     socket.on('save_settings', function (_client_id, _client_api) {
@@ -46,7 +43,7 @@ io.sockets.on('connection', function (socket) {
         }
         else {
             console.log(client_info);
-            request("https://api.digitalocean.com/droplets/", function (error, response, body) {
+            request(api_url+'/droplets/?'+api_key+client_info.client_api+client_id+client_info.client_id, function (error, response, body) {
                 console.log(body);
                 _droplets_info(body);
             });
@@ -62,6 +59,26 @@ io.sockets.on('connection', function (socket) {
             _client_info(client_info);
             console.log(client_info);
         }
+    });
+
+    socket.on('get_sshkeys', function (name, _ssh_info) {
+        if (isEmpty(client_info)) {
+            _ssh_info('omg');
+            console.log(' HUJ',_ssh_info);
+        }
+        else {
+            console.log('sssssshhhh', _ssh_info);
+            request(api_url+'/ssh_keys/?'+api_key+client_info.client_api+client_id+client_info.client_id, function (error, response, body) {
+                console.log(body);
+                _ssh_info(body);
+            });
+        }
+    });
+
+
+    socket.on('remove_data', function(){
+        delete  client_info.client_api;
+        delete  client_info.client_id;
     });
 
 
