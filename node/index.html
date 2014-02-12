@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <!--<script src="/js/bootstrap.js"></script>-->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script>
+        //vars
+        var api_status,  api_nameFirst, api_nameSecond, api_ipAddFirst, api_ipAddSecond,
+                api_statusFirst, api_statusSecond, api_created;
+
+        function createCookie(name, value, days) {
+            var expires;
+
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toGMTString();
+            } else {
+                expires = "";
+            }
+            document.cookie = escape(name) + "=" + escape(value) + expires + "; path=/";
+        }
+
+        function readCookie(name) {
+            var nameEQ = escape(name) + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) return unescape(c.substring(nameEQ.length, c.length));
+            }
+            return null;
+        }
+
+        function eraseCookie(name) {
+            createCookie(name, "", -1);
+        }
+
+        function get_clientInfo(_client_info) {
+            if(_client_info != 'omg'){
+                console.log('baba', _client_info);
+                $('.settings').hide();
+                $('.erase_settings').show();
+                $('.api_show').append('<div class="error">'+ _client_info.client_api  +'</div>');
+                $('.id_show').append('<div class="error">'+ _client_info.client_id  +'</div>');
+            }
+            else{
+                $('.chart').append('<div class="error"> Api and id keys are empty </div>');
+            }
+        }
+
+        function get_droplets(_droplets_info){
+            if(_droplets_info != 'omg'){
+
+                var api_obj = JSON.parse(_droplets_info);
+                 var api_arr = api_obj.droplets;
+                console.log('govn', api_arr[0]['created_at']);
+                console.log('govn', api_arr.length);
+
+                $('.status').append('<h3>Status:  '+  api_obj.status  +'</h3>');
+                for (var i=0;i < api_arr.length;i++)
+                {
+                    $('.all_drops').append('<div class="droplet">');
+                    $('.droplet').append('<ul class="">');
+                    $('.droplet ul').append('<li class="">Name :' + api_arr[i]['name']+ '</li>');
+                    $('.droplet ul').append('<li class="">Ip address :' + api_arr[i]['ip_address']+ '</li>');
+                    $('.droplet ul').append('<li class="">Status :' + api_arr[i]['status']+ '</li>');
+                    $('.droplet ul').append('<li class="">Status :' + api_arr[i]['created_at']+ '</li>');
+                    $('.droplet').append('</ul>');
+                    $('.all_drops').append('</div>');
+                }
+
+
+                $('.chart').append('<div class="suck">Status:  '+  api_obj.status  +'</div>');
+
+
+                $('.chart').append('<div class="suck"> Droplets status data has been loaded</div>');
+            }
+            else{
+                $('.chart').append('<div class="error"> Droplets status is empty</div>');
+            }
+        }
+
+
+        var socket = io.connect('http://192.168.5.194:8080');
+
+        socket.on('connect', function () {
+
+            socket.emit('get_clientinfo', '', function (_client_info) {
+                get_clientInfo(_client_info);
+            });
+
+            socket.emit('get_droplets', '', function (_droplets_info) {
+                get_droplets(_droplets_info);
+            });
+
+        });
+
+        // on load of page
+        $(function () {
+
+            $('.settings_submit').on("click", function () {
+                var client_id = $('#cli_id').val(), client_api = $('#cli_api').val();
+                if((client_id == '') || (client_api == '')){
+                    $('#cli_id, #cli_api').css('border', '1px solid red');
+                    $('.chart').append('<div class="error">Insert some values</div>');
+                    return;
+                }
+                socket.emit('save_settings', client_id, client_api);
+                socket.emit('get_clientinfo', '', function (_client_info) {
+                    get_clientInfo(_client_info);
+                });
+
+                socket.emit('get_droplets', '', function (_droplets_info) {
+                    get_droplets(_droplets_info);
+                });
+            });
+
+        });
+
+    </script>
+</head>
+<body>
+
+<header>
+
+</header>
+
+<section class="main">
+
+    <div class="pref">
+        <div class="settings">
+            <input id="cli_id" type="text"/>
+            <input id="cli_api" type="text"/>
+            <input type="submit" class="settings_submit" value="Save">
+        </div>
+        <div class="settings_show">
+            <div class="id_show">
+                <p>ID:</p>
+            </div>
+            <div class="api_show">
+                <p>API:</p>
+            </div>
+            <input class="erase_settings" type="submit" value="Erase data"/>
+        </div>
+
+    </div>
+
+
+    <div class="status">
+        <div class="all_drops">
+
+        </div>
+        <div class="errors_drops">
+
+        </div>
+    </div>
+
+
+</section>
+<section class="chart">
+
+</section>
+</body>
+</html>
