@@ -24,9 +24,15 @@ function isEmpty(obj) {
     return true;
 }
 
+setInterval(function () {
+    console.log('huj2222');
+}, 3000);
+
+
+
 
 //saving settings
-var client_info = {}, api_url = 'https://api.digitalocean.com', api_key = '&api_key=', client_id = '&client_id=';
+var client_info = {}, logs = [], api_url = 'https://api.digitalocean.com', api_key = '&api_key=', client_id = '&client_id=';
 console.log(client_info);
 
 io.sockets.on('connection', function (socket) {

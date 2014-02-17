@@ -141,7 +141,7 @@ header{
     display: none;
 }
 
-.chart{
+.shout{
     /*position: absolute;*/
     /*bottom: 0px;*/
     height: 200px;
@@ -149,22 +149,36 @@ header{
     margin: 10px auto;
     /*margin-left: 21%;*/
     background: #fff;
+    padding: 20px 0;
 }
 
-.chart .error{
+.shout .error{
     color: red;
     font-weight: bold;
+    margin-left: 15px;
 }
 
-.chart .suck{
+.shout .suck{
     color: green;
     font-weight: bold;
+    margin-left: 15px;
 }
 
 .settings_show{
     width: 225px;
     overflow: hidden;
     margin-top: 15px;
+}
+
+.chart, .logs{
+    width: 480px;
+    display: inline-block;
+    min-height: 100px;
+    vertical-align: top;
+}
+
+.logs{
+    width: 470px;
 }
 
 .id_show .error, .id_show p, .api_show .error, .api_show p{
@@ -186,6 +200,7 @@ display: inline-block;
     color:#fff;
     cursor: pointer;
     padding: 0;
+    margin-top: 10px;
 }
 
 .erase_settings:hover{
@@ -197,6 +212,7 @@ display: inline-block;
     vertical-align: top;
     width: 623px;
     min-height: 200px;
+    padding-top: 15px;
     /*border: 1px solid #398bce;*/
 }
 
