@@ -12,9 +12,10 @@ app.get('/', function (req, res) {
     res.sendfile(__dirname + '/index.html');
 });
 
-app.configure(function () {
+var env = process.env.NODE_ENV || 'development';
+if ('development' == env) {
     app.use(express.static(__dirname + '/static'));
-});
+};
 
 function isEmpty(obj) {
     for (var key in obj) {
